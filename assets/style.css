@@ -107,3 +107,8 @@ body.leaving #curtain{animation:none;transform:translateY(0);pointer-events:auto
 .au-in{width:100%;border:1.5px solid #E7D5DD;border-radius:.9rem;padding:.7rem .9rem;font-size:.9rem;outline:none;transition:border-color .25s,box-shadow .25s}
 .au-in:focus{border-color:#B76E79;box-shadow:0 0 0 4px rgba(183,110,121,.15)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.faq summary{cursor:pointer;list-style:none}.faq summary::-webkit-details-marker{display:none}
+.faq{transition:box-shadow .3s,border-color .3s}.faq:hover{box-shadow:0 10px 28px rgba(74,25,66,.1)}
+.faq .plus{display:inline-block;transition:transform .35s cubic-bezier(.2,.7,.2,1)}.faq[open] .plus{transform:rotate(45deg)}
+.faq[open] .faq-a{animation:fadeIn .4s ease}
