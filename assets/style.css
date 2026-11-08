@@ -1,0 +1,18 @@
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:#FBF5F0;color:#2B2230}
+.card{transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(74,25,66,.16)}
+.fade-in{animation:fadeIn .45s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#cart-panel{transform:translateX(100%);transition:transform .35s ease}
+#cart-panel.open{transform:translateX(0)}
+#cart-overlay{opacity:0;pointer-events:none;transition:opacity .3s ease}
+#cart-overlay.open{opacity:1;pointer-events:auto}
+.nav-link{position:relative;padding:.25rem 0}
+.nav-link.active{color:#B76E79}
+.nav-link.active::after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:2px;background:#B76E79;border-radius:2px}
+.ba-wrap{position:relative;overflow:hidden;border-radius:1rem;user-select:none}
+.ba-after{position:absolute;inset:0;clip-path:inset(0 0 0 50%)}
+.ba-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.ba-handle{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;pointer-events:none}
+.ba-handle::after{content:'\2194';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:9999px;background:#fff;color:#4A1942;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25)}
