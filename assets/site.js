@@ -213,6 +213,16 @@
   }
 
   document.querySelectorAll('[data-year]').forEach(function (s) { s.textContent = new Date().getFullYear(); });
+  /* ---------- Header login button ---------- */
+  function hdrLogin() {
+    var b = $('hdr-login'); if (!b) return; var h = '';
+    try { var sid = JSON.parse(localStorage.getItem('ar-session')), us = JSON.parse(localStorage.getItem('ar-users') || '[]'); var u = us.filter(function (x) { return x.id === sid; })[0]; if (u) h = u.handle; } catch (e) {}
+    b.textContent = h ? '@' + h : 'Log in'; b.href = h ? 'reels.html#me' : 'reels.html#login';
+  }
+  var hb = $('hdr-login');
+  if (hb) hb.addEventListener('click', function (e) { if (window.AuraReels) { e.preventDefault(); window.AuraReels.account(); } });
+  window.AuraHeaderRefresh = hdrLogin; hdrLogin();
+
   window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
 })();
