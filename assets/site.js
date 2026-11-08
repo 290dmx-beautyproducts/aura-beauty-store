@@ -85,11 +85,11 @@
 
   function cardHtml(p) {
     return '<article class="card fade-in bg-white rounded-2xl overflow-hidden border border-rose/15">' +
-      '<div class="aspect-[4/3.8] bg-blush">' + art(p) + '</div><div class="p-4">' +
-      '<h3 class="font-semibold text-plum leading-snug">' + p.name + '</h3>' +
-      '<p class="text-xs text-gray-500 mt-1 min-h-[2.2rem]">' + p.desc + '</p>' +
-      '<div class="mt-3 flex items-center justify-between gap-2"><span class="font-bold text-plum">' + money(p.price) + '</span>' +
-      '<button data-add="' + p.id + '" class="bg-plum text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-rose transition">Add to cart</button></div></div></article>';
+      '<div class="aspect-[4/3] bg-blush">' + art(p) + '</div><div class="p-4">' +
+      '<h3 class="font-semibold text-plum leading-snug text-sm">' + p.name + '</h3>' +
+      '<p class="text-[11px] text-gray-500 mt-0.5 min-h-[1.7rem] leading-snug">' + p.desc + '</p>' +
+      '<div class="mt-2 flex items-center justify-between gap-2"><span class="font-bold text-plum">' + money(p.price) + '</span>' +
+      '<button data-add="' + p.id + '" class="bg-plum text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-rose transition">Add to cart</button></div></div></article>';
   }
 
   /* ---------- Product grids (only on pages that have them) ---------- */
@@ -128,7 +128,7 @@
     } else {
       box.innerHTML = cart.map(function (i) {
         var p = find(i.id);
-        return '<div class="flex gap-3 items-center"><div class="w-16 h-16 rounded-lg overflow-hidden bg-blush shrink-0">' + art(p) + '</div>' +
+        return '<div class="flex gap-3 items-center"><div class="w-12 h-12 rounded-lg overflow-hidden bg-blush shrink-0">' + art(p) + '</div>' +
           '<div class="flex-1 min-w-0"><p class="text-sm font-semibold text-plum leading-snug">' + p.name + '</p><p class="text-xs text-gray-500">' + money(p.price) + '</p>' +
           '<div class="flex items-center gap-2 mt-1"><button data-dec="' + p.id + '" class="w-6 h-6 rounded-full border border-rose/40 text-plum leading-none" aria-label="Decrease">&minus;</button>' +
           '<span class="text-sm w-5 text-center">' + i.qty + '</span><button data-inc="' + p.id + '" class="w-6 h-6 rounded-full border border-rose/40 text-plum leading-none" aria-label="Increase">+</button></div></div>' +
@@ -315,6 +315,21 @@
     e.preventDefault(); document.body.classList.add('leaving'); setTimeout(function () { location.href = h; }, 380);
   });
   window.addEventListener('pageshow', function () { document.body.classList.remove('leaving'); });
+
+  /* ---------- Scroll reveal ---------- */
+  (function () {
+    if (!('IntersectionObserver' in window) || $('feed') || document.querySelector('.dash')) return;
+    var els = document.querySelectorAll('main > section > div, main > section > article, main > section > details, main > section > h2, main article.card, main details.faq, main > section table, main .grid > *');
+    var seen = new Set(), list = [];
+    els.forEach(function (e) { if (!seen.has(e) && !e.closest('.banner')) { seen.add(e); list.push(e); } });
+    var io = new IntersectionObserver(function (en) {
+      en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('rv-in'); io.unobserve(x.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    list.forEach(function (e) {
+      var idx = Array.prototype.indexOf.call(e.parentNode.children, e);
+      e.classList.add('rv'); e.style.setProperty('--d', Math.min(idx, 6) * 0.07 + 's'); io.observe(e);
+    });
+  })();
 
   window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
