@@ -8,6 +8,8 @@
      ================================================================ */
   var WHATSAPP_NUMBER = '254700000000';
   var PHONE_NUMBER = '254700000000';
+  /* Social media links: paste your full page links between the quotes. */
+  var SOCIAL = { instagram: '', tiktok: '', facebook: '', youtube: '' };
 
   var PRODUCTS = [
     { id: 's1', cat: 'skin', name: 'Clear Skin Niacinamide Serum', desc: 'Calms breakouts and refines pores.', price: 1450, hue: ['#F7D6DF', '#E7A3B5'] },
@@ -45,6 +47,10 @@
   document.querySelectorAll('[data-wa]').forEach(function (a) {
     a.href = waLink(a.getAttribute('data-wa') || 'Hello Aura Beauty, I would like to order.');
     a.target = '_blank'; a.rel = 'noopener';
+  });
+  document.querySelectorAll('[data-social]').forEach(function (a) {
+    var u = SOCIAL[a.getAttribute('data-social')];
+    if (u) a.href = u; else a.addEventListener('click', function (e) { e.preventDefault(); toast('Link coming soon'); });
   });
   document.querySelectorAll('[data-call]').forEach(function (a) { a.href = 'tel:+' + PHONE_NUMBER; });
   document.querySelectorAll('[data-phone-text]').forEach(function (s) { s.textContent = '+' + PHONE_NUMBER; });
@@ -170,7 +176,6 @@
   });
 
   /* ---------- Mobile menu ---------- */
-  $('menu-btn').addEventListener('click', function () { $('mobile-nav').classList.toggle('hidden'); });
 
   /* ---------- Video showcase (home page) ---------- */
   var player = $('clip-player');
