@@ -42,3 +42,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:#FBF5F0;color:#2B2230}
 @keyframes heartpop{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.2);opacity:1}100%{transform:scale(1) translateY(-40px);opacity:0}}
 .sheet{animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+
+@media (max-height:720px){
+.dash>div{gap:.6rem!important;padding-top:.4rem!important;padding-bottom:.4rem!important}
+.dash .kick{display:none}
+.dash h1{font-size:2.1rem!important;margin-top:0!important}
+.dash .card{padding:.5rem!important}
+.dash .card>span:first-child{width:2rem!important;height:2rem!important;font-size:1rem!important}
+}
