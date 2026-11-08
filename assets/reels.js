@@ -21,6 +21,7 @@
     more: '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><circle cx="5" cy="12" r="1.800"/><circle cx="12" cy="12" r="1.800"/><circle cx="19" cy="12" r="1.800"/></svg>',
     mute: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6M16 9l6 6"/></svg>',
     sound: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.500 8.500a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>',
+    auto: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 5 6 5 6-5M6 13l6 5 6-5"/></svg>',
     plus: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>',
     play: '<svg viewBox="0 0 24 24" width="64" height="64" fill="#fff"><path d="M8 5v14l11-7z"/></svg>',
     pause: '<svg viewBox="0 0 24 24" width="64" height="64" fill="#fff"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
@@ -97,7 +98,7 @@
   seedDemo();
 
   /* ---------- State ---------- */
-  var tab = 'foryou', tagFilter = '', muted = true, activeId = null;
+  var tab = 'foryou', tagFilter = '', muted = true, activeId = null, auto = !!load('ar-auto', false), demoTimer = null;
   var feed = $('#feed');
   var seenViews = {};
 
@@ -189,12 +190,13 @@
 
   function activate(r, id) {
     activeId = id; r.classList.add('active');
-    var v = $('video', r); if (v) { v.muted = muted; v.play().catch(function () {}); }
+    var v = $('video', r); if (v) { v.muted = muted; v.loop = !auto; v.play().catch(function () {}); }
     var d = $('.demo', r); if (d) { d.classList.remove('paused'); d.classList.add('run'); }
+    clearTimeout(demoTimer); if (d) demoTimer = setTimeout(function () { if (auto && activeId === id) nextReel(r); }, 8200);
     if (!seenViews[id]) { seenViews[id] = 1; var p = postById(id); if (p) { p.views = (p.views || 0) + 1; } }
   }
   function deactivate(r) {
-    r.classList.remove('active');
+    r.classList.remove('active'); clearTimeout(demoTimer);
     var v = $('video', r); if (v) { v.pause(); try { v.currentTime = 0; } catch (e) {} }
     var d = $('.demo', r); if (d) { d.classList.remove('run'); }
     var f = $('.pfill', r); if (f) f.style.width = '0%';
@@ -203,6 +205,9 @@
     var v = e.target; if (v.tagName !== 'VIDEO' || !v.duration) return;
     var f = $('.pfill', v.closest('.reel')); if (f) f.style.width = (v.currentTime / v.duration * 100) + '%';
   }, true);
+
+  function nextReel(r) { var n = r.nextElementSibling; if (n && n.classList.contains('reel')) n.scrollIntoView({ behavior: 'smooth' }); else feed.scrollTo({ top: 0, behavior: 'smooth' }); }
+  feed.addEventListener('ended', function (e) { if (auto && e.target.tagName === 'VIDEO') nextReel(e.target.closest('.reel')); }, true);
 
   /* ---------- Gestures: tap to pause, double-tap to like ---------- */
   var lastTap = 0, lastTimer = null;
@@ -379,7 +384,7 @@
           var colors = ['#B76E79', '#4A1942', '#1E7B5F', '#C9A24B', '#7b3a6e', '#D98324'];
           u = { id: uid('u_'), name: name, handle: handle, bio: '', color: colors[users.length % colors.length], pw: h }; users.push(u);
         } else { if (!u || u.demo || u.pw !== h) return draw('Wrong username or password.'); }
-        session = u.id; saveAll(); closeSheet(); toast('Welcome, @' + u.handle); renderTopbar(); renderFeed(activeId);
+        session = u.id; saveAll(); if (window.AuraHeaderRefresh) AuraHeaderRefresh(); closeSheet(); toast('Welcome, @' + u.handle); renderTopbar(); renderFeed(activeId);
       });
     });
     w.addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#a-go', w).click(); });
@@ -409,7 +414,7 @@
       if (e.target.closest('#p-back')) { w.remove(); return; }
       var op = e.target.closest('[data-open]'); if (op) { w.remove(); tab = 'foryou'; tagFilter = ''; setTabs(); renderFeed(op.getAttribute('data-open')); return; }
       if (e.target.closest('#profile-follow')) { needLogin('Log in to follow creators', function () { toggleFollow(u.id); }); return; }
-      if (e.target.closest('#p-logout')) { session = null; saveAll(); w.remove(); renderTopbar(); renderFeed(activeId); toast('Logged out'); return; }
+      if (e.target.closest('#p-logout')) { session = null; saveAll(); if (window.AuraHeaderRefresh) AuraHeaderRefresh(); w.remove(); renderTopbar(); renderFeed(activeId); toast('Logged out'); return; }
       if (e.target.closest('#p-edit')) { var nb = prompt('Write your bio (150 characters max):', u.bio || ''); if (nb !== null) { u.bio = nb.slice(0, 150); saveAll(); openProfile(u.id); } }
     });
   }
@@ -454,15 +459,14 @@
   /* ---------- Top bar ---------- */
   function setTabs() { $$('[data-tab]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tab') === tab); }); }
   function renderTopbar() {
-    var m = me(); var pb = $('#btn-profile');
-    pb.innerHTML = m ? avatar(m, 30) : '<span class="text-xs font-semibold border border-white/70 rounded-full px-3 py-1">Log in</span>';
     $('#btn-mute').innerHTML = muted ? I.mute : I.sound; $('#btn-create').innerHTML = I.plus;
+    var ab = $('#btn-auto'); ab.innerHTML = I.auto; ab.style.background = auto ? 'rgba(255,255,255,.3)' : 'transparent'; ab.setAttribute('aria-pressed', auto ? 'true' : 'false');
   }
   $('#topbar').addEventListener('click', function (e) {
     var t = e.target.closest('[data-tab]'); if (t) { tab = t.getAttribute('data-tab'); tagFilter = ''; setTabs(); renderFeed(); return; }
     if (e.target.closest('#btn-mute')) { muted = !muted; $$('video', feed).forEach(function (v) { v.muted = muted; }); renderTopbar(); toast(muted ? 'Sound off' : 'Sound on'); return; }
     if (e.target.closest('#btn-create')) { openCreate(); return; }
-    if (e.target.closest('#btn-profile')) { if (me()) openProfile(me().id); else openAuth(); }
+    if (e.target.closest('#btn-auto')) { auto = !auto; store('ar-auto', auto); renderTopbar(); var ar = $('.reel.active', feed), av = ar && $('video', ar); if (av) av.loop = !auto; if (ar && $('.demo', ar)) { clearTimeout(demoTimer); if (auto) demoTimer = setTimeout(function () { if (auto) nextReel(ar); }, 8200); } toast(auto ? 'Auto-scroll on' : 'Auto-scroll off'); return; }
   });
   $('#reels-root').addEventListener('click', function (e) { if (e.target.closest('#clear-tag')) { tagFilter = ''; renderFeed(); } });
 
@@ -478,8 +482,10 @@
   });
 
   /* ---------- Init ---------- */
+  window.AuraReels = { account: function () { if (me()) openProfile(me().id); else openAuth(); } };
   setTabs(); renderTopbar();
   var m = location.hash.match(/reel=([\w]+)/);
   renderFeed(m && postById(m[1]) ? m[1] : null);
+  if (location.hash === '#login' || location.hash === '#me') { window.AuraReels.account(); }
   window.addEventListener('beforeunload', function () { store('ar-posts', posts); });
 })();
