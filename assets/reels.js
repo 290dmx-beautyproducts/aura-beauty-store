@@ -357,38 +357,9 @@
     });
   }
 
-  /* ---------- Auth ---------- */
-  function openAuth(msg) {
-    var mode = 'login';
-    var w = sheet('<div class="p-6" id="auth-box"></div>', 'max-h-[92vh] overflow-y-auto');
-    function draw(err) {
-      $('#auth-box', w).innerHTML = '<div class="text-center mb-5"><p class="font-serif text-3xl font-bold text-plum">Aura <span class="text-rose">Reels</span></p><p class="text-sm text-neutral-500 mt-1">' + esc(msg || 'Log in to like, comment, follow and post reels') + '</p></div>' +
-        '<div class="flex border-b mb-4 text-sm font-semibold"><button data-mode="login" class="flex-1 py-2 ' + (mode === 'login' ? 'border-b-2 border-plum text-plum' : 'text-neutral-400') + '">Log in</button><button data-mode="signup" class="flex-1 py-2 ' + (mode === 'signup' ? 'border-b-2 border-plum text-plum' : 'text-neutral-400') + '">Sign up</button></div>' +
-        (mode === 'signup' ? '<input id="a-name" placeholder="Full name" class="w-full border rounded-lg px-3 py-2.5 mb-3 text-sm">' : '') +
-        '<input id="a-handle" placeholder="Username" autocapitalize="none" class="w-full border rounded-lg px-3 py-2.5 mb-3 text-sm"><input id="a-pw" type="password" placeholder="Password (6+ characters)" class="w-full border rounded-lg px-3 py-2.5 mb-3 text-sm">' +
-        '<p class="text-red-500 text-xs mb-2 min-h-[1rem]">' + (err || '') + '</p><button id="a-go" class="w-full bg-plum text-white font-semibold rounded-lg py-3 text-sm">' + (mode === 'login' ? 'Log in' : 'Create account') + '</button>' +
-        '<p class="text-[11px] text-neutral-400 text-center mt-4">Preview mode: accounts and reels are saved on this device only.</p>';
-    }
-    draw();
-    w.addEventListener('click', function (e) {
-      var md = e.target.closest('[data-mode]'); if (md) { mode = md.getAttribute('data-mode'); draw(); return; }
-      if (!e.target.closest('#a-go')) return;
-      var handle = $('#a-handle', w).value.trim().toLowerCase().replace(/^@/, ''), pw = $('#a-pw', w).value;
-      if (!/^[a-z0-9_.]{3,20}$/.test(handle)) return draw('Username: 3 to 20 letters, numbers, dots or underscores.');
-      if (pw.length < 6) return draw('Password must be at least 6 characters.');
-      hashPw(pw).then(function (h) {
-        var u = users.filter(function (x) { return x.handle === handle; })[0];
-        if (mode === 'signup') {
-          var name = $('#a-name', w).value.trim(); if (!name) return draw('Please enter your name.');
-          if (u) return draw('That username is taken.');
-          var colors = ['#B76E79', '#4A1942', '#1E7B5F', '#C9A24B', '#7b3a6e', '#D98324'];
-          u = { id: uid('u_'), name: name, handle: handle, bio: '', color: colors[users.length % colors.length], pw: h }; users.push(u);
-        } else { if (!u || u.demo || u.pw !== h) return draw('Wrong username or password.'); }
-        session = u.id; saveAll(); if (window.AuraHeaderRefresh) AuraHeaderRefresh(); closeSheet(); toast('Welcome, @' + u.handle); renderTopbar(); renderFeed(activeId);
-      });
-    });
-    w.addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#a-go', w).click(); });
-  }
+  /* ---------- Auth (shared with the whole site) ---------- */
+  function openAuth(msg) { if (window.AuraAuth) window.AuraAuth.open(msg); }
+  window.addEventListener('aura-auth', function () { users = load('ar-users', []); session = load('ar-session', null); seedDemo(); renderTopbar(); renderFeed(activeId); });
 
   /* ---------- Profile ---------- */
   function openProfile(userId) {
@@ -414,7 +385,7 @@
       if (e.target.closest('#p-back')) { w.remove(); return; }
       var op = e.target.closest('[data-open]'); if (op) { w.remove(); tab = 'foryou'; tagFilter = ''; setTabs(); renderFeed(op.getAttribute('data-open')); return; }
       if (e.target.closest('#profile-follow')) { needLogin('Log in to follow creators', function () { toggleFollow(u.id); }); return; }
-      if (e.target.closest('#p-logout')) { session = null; saveAll(); if (window.AuraHeaderRefresh) AuraHeaderRefresh(); w.remove(); renderTopbar(); renderFeed(activeId); toast('Logged out'); return; }
+      if (e.target.closest('#p-logout')) { w.remove(); if (window.AuraAuth) window.AuraAuth.logout(); return; }
       if (e.target.closest('#p-edit')) { var nb = prompt('Write your bio (150 characters max):', u.bio || ''); if (nb !== null) { u.bio = nb.slice(0, 150); saveAll(); openProfile(u.id); } }
     });
   }
