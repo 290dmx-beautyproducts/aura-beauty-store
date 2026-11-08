@@ -109,6 +109,7 @@
     var item = cart.filter(function (i) { return i.id === id; })[0];
     if (item) item.qty += 1; else cart.push({ id: id, qty: 1 });
     save(); renderCart(); toast(find(id).name + ' added to cart');
+    document.querySelectorAll('.hdr-cart').forEach(function (b) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); });
   }
   function subtotal() { return cart.reduce(function (s, i) { return s + find(i.id).price * i.qty; }, 0); }
   function deliveryFee(sub) {
@@ -218,15 +219,102 @@
   }
 
   document.querySelectorAll('[data-year]').forEach(function (s) { s.textContent = new Date().getFullYear(); });
-  /* ---------- Header login button ---------- */
-  function hdrLogin() {
-    var b = $('hdr-login'); if (!b) return; var h = '';
-    try { var sid = JSON.parse(localStorage.getItem('ar-session')), us = JSON.parse(localStorage.getItem('ar-users') || '[]'); var u = us.filter(function (x) { return x.id === sid; })[0]; if (u) h = u.handle; } catch (e) {}
-    b.textContent = h ? '@' + h : 'Log in'; b.href = h ? 'reels.html#me' : 'reels.html#login';
+  /* ---------- Shared account system (header, sign up, log in) ---------- */
+  var RESERVED = ['aura_official', 'amina.glows', 'zawadi.wigs', 'nyali.skin', 'mombasa.locs'];
+  function lget(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function curUser() { var id = lget('ar-session', null); return lget('ar-users', []).filter(function (u) { return u.id === id; })[0] || null; }
+  function hashPw(pw) {
+    if (window.crypto && crypto.subtle) return crypto.subtle.digest('SHA-256', new TextEncoder().encode('aura:' + pw)).then(function (b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); });
+    return Promise.resolve('p:' + pw);
   }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function hdrLogin() {
+    var b = $('hdr-login'); if (!b) return; var u = curUser();
+    if (u) { b.innerHTML = '<span class="av">' + esc((u.name || u.handle).charAt(0).toUpperCase()) + '</span><span>Profile</span>'; b.href = 'account.html'; }
+    else { b.textContent = 'Log in'; b.href = '#'; }
+  }
+  function refreshAccount() {
+    var g = $('acct-gate'), m = $('acct-main'); if (!g || !m) return; var u = curUser();
+    g.classList.toggle('hidden', !!u); m.classList.toggle('hidden', !u);
+    if (u) {
+      document.querySelectorAll('[data-user-name]').forEach(function (e) { e.textContent = u.name; });
+      document.querySelectorAll('[data-user-handle]').forEach(function (e) { e.textContent = u.handle; });
+      document.querySelectorAll('[data-user-initial]').forEach(function (e) { e.textContent = (u.name || u.handle).charAt(0).toUpperCase(); });
+    }
+  }
+  function announce() { hdrLogin(); refreshAccount(); window.dispatchEvent(new Event('aura-auth')); }
+  function logout() { lset('ar-session', null); announce(); toast('You have been logged out'); }
+
+  function openAuth(msg, cb) {
+    var old = $('au-root'); if (old) old.remove();
+    var mode = 'login';
+    var w = document.createElement('div'); w.id = 'au-root'; w.className = 'au-back fixed inset-0 z-[70] flex items-center justify-center p-4';
+    w.innerHTML = '<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-au-close></div><div class="au-card relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl"><div id="au-body"></div></div>';
+    document.body.appendChild(w);
+    function close() { w.remove(); document.removeEventListener('keydown', onKey); }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    function draw(err) {
+      $('au-body').innerHTML = '<div class="relative bg-gradient-to-br from-plum via-[#7b3a6e] to-rose text-white text-center px-6 pt-7 pb-6"><button data-au-close class="absolute right-4 top-3 text-2xl leading-none text-white/80 hover:text-white" aria-label="Close">&times;</button>' +
+        '<span class="logo-mark mx-auto">A</span><p class="font-serif text-3xl font-bold mt-3">Aura Beauty</p><p class="text-xs text-white/80 mt-1">' + esc(msg || 'Log in or create your account') + '</p></div>' +
+        '<div class="p-6"><div class="flex bg-blush rounded-full p-1 mb-4 text-sm font-semibold"><button data-au-mode="login" class="flex-1 py-2 rounded-full transition ' + (mode === 'login' ? 'bg-plum text-white shadow' : 'text-plum') + '">Log in</button><button data-au-mode="signup" class="flex-1 py-2 rounded-full transition ' + (mode === 'signup' ? 'bg-plum text-white shadow' : 'text-plum') + '">Sign up</button></div>' +
+        (mode === 'signup' ? '<input id="au-name" placeholder="Full name" class="au-in mb-3">' : '') +
+        '<input id="au-handle" placeholder="Username" autocapitalize="none" autocomplete="username" class="au-in mb-3"><input id="au-pw" type="password" placeholder="Password (6+ characters)" autocomplete="' + (mode === 'login' ? 'current-password' : 'new-password') + '" class="au-in mb-2">' +
+        '<p class="text-red-500 text-xs min-h-[1.1rem] mb-2">' + (err || '') + '</p><button id="au-go" class="w-full py-3 rounded-full bg-gradient-to-r from-plum to-rose text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition">' + (mode === 'login' ? 'Log in' : 'Create account') + '</button>' +
+        '<p class="text-[11px] text-gray-400 text-center mt-4">Preview mode: accounts are saved on this device only.</p></div>';
+      var f = $(mode === 'signup' ? 'au-name' : 'au-handle'); if (f) f.focus();
+    }
+    draw();
+    w.addEventListener('click', function (e) {
+      if (e.target.closest('[data-au-close]')) { close(); return; }
+      var md = e.target.closest('[data-au-mode]'); if (md) { mode = md.getAttribute('data-au-mode'); draw(); return; }
+      if (!e.target.closest('#au-go')) return;
+      var handle = $('au-handle').value.trim().toLowerCase().replace(/^@/, ''), pw = $('au-pw').value;
+      if (!/^[a-z0-9_.]{3,20}$/.test(handle)) return draw('Username: 3 to 20 letters, numbers, dots or underscores.');
+      if (pw.length < 6) return draw('Password must be at least 6 characters.');
+      hashPw(pw).then(function (h) {
+        var users = lget('ar-users', []), u = users.filter(function (x) { return x.handle === handle; })[0];
+        if (mode === 'signup') {
+          var name = $('au-name').value.trim(); if (!name) return draw('Please enter your name.');
+          if (u || RESERVED.indexOf(handle) >= 0) return draw('That username is taken.');
+          var cols = ['#B76E79', '#4A1942', '#1E7B5F', '#C9A24B', '#7b3a6e', '#D98324'];
+          u = { id: 'u_' + Math.random().toString(36).slice(2, 9), name: name, handle: handle, bio: '', color: cols[users.length % cols.length], pw: h };
+          users.push(u); lset('ar-users', users);
+        } else if (!u || u.demo || u.pw !== h) return draw('Wrong username or password.');
+        lset('ar-session', u.id); close(); toast('Welcome, @' + u.handle); announce(); if (cb) cb(u);
+      });
+    });
+    w.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.tagName === 'INPUT') $('au-go').click(); });
+  }
+  window.AuraAuth = { open: openAuth, logout: logout, current: curUser };
   var hb = $('hdr-login');
-  if (hb) hb.addEventListener('click', function (e) { if (window.AuraReels) { e.preventDefault(); window.AuraReels.account(); } });
-  window.AuraHeaderRefresh = hdrLogin; hdrLogin();
+  if (hb) hb.addEventListener('click', function (e) { if (!curUser()) { e.preventDefault(); openAuth(); } });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-login]')) openAuth();
+    if (e.target.closest('#acct-logout')) logout();
+  });
+  hdrLogin(); refreshAccount();
+
+  /* ---------- Header behaviour, speed-dial, page transitions ---------- */
+  var hd = $('hdr'), lastY = 0;
+  if (hd) window.addEventListener('scroll', function () {
+    var y = window.scrollY; hd.classList.toggle('scrolled', y > 8);
+    if (y > lastY && y > 140) hd.classList.add('hide'); else hd.classList.remove('hide'); lastY = y;
+  }, { passive: true });
+  var fab = $('fab'), fb2 = $('fab-btn');
+  if (fb2) {
+    fb2.addEventListener('click', function (e) { e.stopPropagation(); var o = fab.classList.toggle('open'); fb2.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+    document.addEventListener('click', function (e) { if (!e.target.closest('#fab')) { fab.classList.remove('open'); fb2.setAttribute('aria-expanded', 'false'); } });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href]'); if (!a || e.defaultPrevented || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    var h = a.getAttribute('href');
+    if (!h || h.charAt(0) === '#' || /^(https?:|tel:|mailto:|sms:|javascript:)/.test(h)) return;
+    e.preventDefault(); document.body.classList.add('leaving'); setTimeout(function () { location.href = h; }, 380);
+  });
+  window.addEventListener('pageshow', function () { document.body.classList.remove('leaving'); });
 
   window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
