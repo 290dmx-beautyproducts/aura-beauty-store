@@ -27,12 +27,12 @@
 </header>
 
 <main>
-<section class="bg-gradient-to-br from-plum via-[#5d2155] to-[#7b3a6e] text-white"><div class="max-w-6xl mx-auto px-4 py-14 text-center">
-<p class="uppercase tracking-[.3em] text-xs text-[#F2C9CF]">Your Space</p><h1 class="font-serif text-4xl md:text-6xl font-bold mt-3">My Profile</h1><p class="text-white/80 mt-4 max-w-xl mx-auto">Orders, rewards and your skincare routine in one place.</p></div></section>
-<section id="acct-gate" class="max-w-md mx-auto px-4 py-16 text-center">
-<div class="bg-white rounded-3xl border border-rose/15 shadow-sm p-8"><span class="logo-mark mx-auto">A</span><h2 class="font-serif text-3xl font-bold text-plum mt-4">Welcome to Aura</h2><p class="text-gray-600 mt-2 text-sm">Log in or create an account to see your profile, orders and saved routine.</p>
+<section class="banner bg-gradient-to-br from-plum via-[#5d2155] to-[#7b3a6e] text-white"><div class="max-w-6xl mx-auto px-4 py-6 md:py-8 text-center">
+<p class="uppercase tracking-[.3em] text-xs text-[#F2C9CF]">Your Space</p><h1 class="font-serif text-3xl md:text-5xl font-bold mt-2">My Profile</h1><p class="text-white/80 mt-2 text-sm max-w-xl mx-auto">Orders, rewards and your skincare routine in one place.</p></div></section>
+<section id="acct-gate" class="max-w-md mx-auto px-4 py-10 text-center">
+<div class="bg-white rounded-3xl border border-rose/15 shadow-sm p-5"><span class="logo-mark mx-auto">A</span><h2 class="font-serif text-3xl font-bold text-plum mt-4">Welcome to Aura</h2><p class="text-gray-600 mt-2 text-sm">Log in or create an account to see your profile, orders and saved routine.</p>
 <button data-login class="mt-6 w-full py-3 rounded-full bg-plum text-white font-semibold hover:bg-rose transition">Log in or Sign up</button></div></section>
-<section id="acct-main" class="hidden max-w-6xl mx-auto px-4 py-14 grid md:grid-cols-3 gap-6">
+<section id="acct-main" class="hidden max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4">
 <div class="bg-white rounded-2xl p-6 shadow-sm border border-rose/15"><div class="flex items-center gap-4"><div data-user-initial class="w-16 h-16 rounded-full bg-gradient-to-br from-rose to-plum text-white flex items-center justify-center font-serif text-2xl font-bold">A</div><div><p data-user-name class="font-semibold text-plum">Your name</p><p class="text-xs text-gray-500">@<span data-user-handle>username</span></p></div></div>
 <div class="mt-5 space-y-3 text-sm"><div class="flex justify-between"><span class="text-gray-500">Loyalty points</span><span class="font-medium">0</span></div></div>
 <a href="reels.html#me" class="mt-5 block text-center w-full py-2.5 rounded-full bg-plum text-white font-semibold text-sm hover:bg-rose transition">My Reels Profile</a>
@@ -43,7 +43,7 @@
 <a href="glowing-skin.html" class="inline-block font-semibold px-6 py-3 rounded-full transition mt-5 bg-plum text-white hover:bg-rose">Shop Glowing Skin</a></div></section>
 </main>
 
-<footer class="ft mt-12">
+<footer class="ft mt-8">
   <div class="relative z-10 max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-2.5">
     <div class="flex items-center gap-3"><span class="logo-mark">A</span><div><p class="font-serif text-lg text-white leading-none">Aura Beauty Products</p><p class="hidden sm:block text-[11px] text-white/55 mt-1">Skincare &amp; wigs, delivered across Kenya</p></div></div>
     <div class="flex flex-wrap justify-center gap-2 text-white/80"><span class="ft-chip">24 to 48 hr delivery</span><span class="ft-chip">Hygiene-safe returns</span><span class="ft-chip">Pay by M-Pesa</span></div>
@@ -62,9 +62,9 @@
 <!-- Cart drawer -->
 <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40"></div>
 <aside id="cart-panel" class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-50 shadow-2xl flex flex-col" aria-label="Shopping cart">
-  <div class="flex items-center justify-between px-5 py-4 border-b border-rose/20"><h2 class="font-serif text-2xl font-bold text-plum">Your Cart</h2><button id="close-cart" class="text-2xl text-plum leading-none px-2" aria-label="Close cart">&times;</button></div>
-  <div id="cart-items" class="flex-1 overflow-y-auto px-5 py-4 space-y-4"></div>
-  <div class="border-t border-rose/20 px-5 py-4 space-y-3 bg-cream">
+  <div class="flex items-center justify-between px-4 py-2.5 border-b border-rose/20"><h2 class="font-serif text-2xl font-bold text-plum">Your Cart</h2><button id="close-cart" class="text-2xl text-plum leading-none px-2" aria-label="Close cart">&times;</button></div>
+  <div id="cart-items" class="flex-1 overflow-y-auto px-4 py-2.5 space-y-4"></div>
+  <div class="border-t border-rose/20 px-4 py-2.5 space-y-3 bg-cream">
     <div><label for="zone" class="text-xs font-semibold text-plum uppercase tracking-wider">Delivery location</label>
       <select id="zone" class="mt-1 w-full border border-rose/30 rounded-lg px-3 py-2 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose">
         <option value="local">Local Base (free over KSh 1,500, else KSh 150)</option>
