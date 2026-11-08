@@ -213,5 +213,6 @@
   }
 
   document.querySelectorAll('[data-year]').forEach(function (s) { s.textContent = new Date().getFullYear(); });
+  window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
 })();
