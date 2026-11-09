@@ -1,5 +1,6 @@
-(function () {
+window.AuraReelsMount = function () {
   'use strict';
+  var __off = [];
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -359,7 +360,8 @@
 
   /* ---------- Auth (shared with the whole site) ---------- */
   function openAuth(msg) { if (window.AuraAuth) window.AuraAuth.open(msg); }
-  window.addEventListener('aura-auth', function () { users = load('ar-users', []); session = load('ar-session', null); seedDemo(); renderTopbar(); renderFeed(activeId); });
+  var onAuth = function () { users = load('ar-users', []); session = load('ar-session', null); seedDemo(); renderTopbar(); renderFeed(activeId); };
+  window.addEventListener('aura-auth', onAuth); __off.push(function () { window.removeEventListener('aura-auth', onAuth); });
 
   /* ---------- Profile ---------- */
   function openProfile(userId) {
@@ -442,7 +444,7 @@
   $('#reels-root').addEventListener('click', function (e) { if (e.target.closest('#clear-tag')) { tagFilter = ''; renderFeed(); } });
 
   /* Keyboard */
-  document.addEventListener('keydown', function (e) {
+  var onKey = function (e) {
     if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || $('#sheet-root') || $('#profile-root')) { if (e.key === 'Escape') { closeSheet(); } return; }
     var r = $('.reel.active', feed);
     if (e.key === 'ArrowDown' && r && r.nextElementSibling) { e.preventDefault(); r.nextElementSibling.scrollIntoView({ behavior: 'smooth' }); }
@@ -450,7 +452,8 @@
     else if (e.key === ' ' && r) { e.preventDefault(); togglePlay(r); }
     else if (e.key.toLowerCase() === 'm') $('#btn-mute').click();
     else if (e.key.toLowerCase() === 'l' && r) { needLogin('Log in to like reels', function () { toggleLike(r.getAttribute('data-id')); }); }
-  });
+  };
+  document.addEventListener('keydown', onKey); __off.push(function () { document.removeEventListener('keydown', onKey); });
 
   /* ---------- Init ---------- */
   window.AuraReels = { account: function () { if (me()) openProfile(me().id); else openAuth(); } };
@@ -458,5 +461,13 @@
   var m = location.hash.match(/reel=([\w]+)/);
   renderFeed(m && postById(m[1]) ? m[1] : null);
   if (location.hash === '#login' || location.hash === '#me') { window.AuraReels.account(); }
-  window.addEventListener('beforeunload', function () { store('ar-posts', posts); });
-})();
+  var onUnload = function () { store('ar-posts', posts); };
+  window.addEventListener('beforeunload', onUnload);
+  __off.push(function () { window.removeEventListener('beforeunload', onUnload); store('ar-posts', posts); });
+  return function destroy() {
+    __off.forEach(function (f) { try { f(); } catch (e) {} });
+    clearTimeout(demoTimer); try { io.disconnect(); } catch (e) {}
+    closeSheet(); var pr = document.getElementById('profile-root'); if (pr) pr.remove();
+    $$('video', feed).forEach(function (v) { try { v.pause(); } catch (e) {} });
+  };
+};
