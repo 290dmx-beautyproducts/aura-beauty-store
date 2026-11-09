@@ -121,10 +121,6 @@ article.card>div:last-child{flex:1;display:flex;flex-direction:column}
 article.card>div:last-child>div:last-child{margin-top:auto;padding-top:.4rem}
 
 /* ===== Website-style navigation: quick fade, header stays put ===== */
-@view-transition{navigation:auto}
-::view-transition-old(root),::view-transition-new(root){animation-duration:.14s;animation-timing-function:ease-out}
-#hdr{view-transition-name:site-header}
-::view-transition-group(site-header){animation-duration:0s}
 .au-card{animation:auIn .2s ease-out}
 @keyframes auIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
 @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
