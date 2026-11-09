@@ -5,33 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Before & After Gallery | Aura Beauty Store</title>
 <meta name="description" content="Community transformations. Drag the slider to compare.">
-<link rel="stylesheet" href="assets/tailwind.css?v=1794199692">
+<link rel="stylesheet" href="assets/tailwind.css?v=1794200108">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=block" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=1794199692">
+<link rel="stylesheet" href="assets/style.css?v=1794200108">
 </head>
 <body>
 <header id="hdr" class="sticky top-0 z-40">
-  <div class="max-w-6xl mx-auto px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
-    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-      <a href="index.html" class="logo flex items-center gap-2 whitespace-nowrap" aria-label="Aura Beauty Products home"><span class="logo-mark">A</span><span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-plum leading-none whitespace-nowrap">Aura <span class="text-rose">Beauty</span></span></a>
-      <a href="index.html" class="hdr-icon" aria-label="Dashboard"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Dashboard</span></a>
-    </div>
-    <div class="flex items-center gap-1.5 sm:gap-2.5">
+  <div class="max-w-6xl mx-auto px-3 sm:px-4 h-12 lg:h-14 flex items-center justify-between gap-3">
+    <a href="index.html" class="logo flex items-center gap-2 whitespace-nowrap shrink-0" aria-label="Aura Beauty Products home"><span class="logo-mark">A</span><span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-plum leading-none whitespace-nowrap">Aura <span class="text-rose">Beauty</span></span></a>
+    <nav class="hdr-nav hidden lg:flex items-center gap-1" aria-label="Pages"><a href="index.html">Dashboard</a><a href="glowing-skin.html">Glowing Skin</a><a href="the-crown.html">The Crown</a><a href="gallery.html" class="on" aria-current="page">Before &amp; After</a><a href="reels.html">Aura Reels</a><a href="contact.html">Contact</a></nav>
+    <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
       <a id="hdr-login" href="#" class="hdr-pill whitespace-nowrap">Log in</a>
       <button class="open-cart hdr-cart" aria-label="Open cart"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M3 4h2l2 9h8l2-7H6"/><circle cx="8" cy="16" r="1"/><circle cx="15" cy="16" r="1"/></svg><span class="hidden sm:inline">Cart</span><span class="cart-count">0</span></button>
     </div>
   </div>
+  <nav class="hdr-strip lg:hidden" aria-label="Pages"><div><a href="index.html">Dashboard</a><a href="glowing-skin.html">Glowing Skin</a><a href="the-crown.html">The Crown</a><a href="gallery.html" class="on" aria-current="page">Before &amp; After</a><a href="reels.html">Aura Reels</a><a href="contact.html">Contact</a></div></nav>
 </header>
 <script>(function(){try{var sid=JSON.parse(localStorage.getItem('ar-session')),u=JSON.parse(localStorage.getItem('ar-users')||'[]').filter(function(x){return x.id===sid})[0],b=document.getElementById('hdr-login');if(u&&b){b.innerHTML='<span class="av">'+String((u.name||u.handle).charAt(0)).toUpperCase().replace(/[<>&"']/g,'')+'</span><span>Profile</span>';b.href='account.html';}var n=JSON.parse(localStorage.getItem('aura-cart')||'[]').reduce(function(a,i){return a+(i.qty||0)},0);document.querySelectorAll('.cart-count').forEach(function(e){e.textContent=n});}catch(e){}})();</script>
 
 <main>
 <section class="banner bg-gradient-to-br from-plum via-[#5d2155] to-[#7b3a6e] text-white"><div class="max-w-6xl mx-auto px-4 py-6 md:py-8 text-center">
 <p class="uppercase tracking-[.3em] text-xs text-[#F2C9CF]">Community Gallery</p><h1 class="font-serif text-3xl md:text-5xl font-bold mt-2">Before &amp; After</h1><p class="text-white/80 mt-2 text-sm max-w-xl mx-auto">Drag the slider on each card to see the transformation.</p></div></section>
-<section class="max-w-6xl mx-auto px-4 py-8"><div id="ba-grid" class="grid md:grid-cols-3 gap-4"></div>
+<section class="max-w-6xl mx-auto px-4 py-8"><div id="ba-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4"></div>
 <p class="text-xs text-gray-500 text-center mt-6">These are sample illustrations. Real client photos will appear here with permission.</p>
-<div class="mt-12 bg-white rounded-2xl border border-rose/15 p-5 text-center"><h3 class="font-serif text-3xl font-bold text-plum">Share your transformation</h3><p class="text-gray-600 mt-2 max-w-lg mx-auto">Loved your results? Send your before and after photos on WhatsApp and join our community gallery.</p>
+<div class="mt-6 bg-white rounded-2xl border border-rose/15 p-5 text-center"><h3 class="font-serif text-3xl font-bold text-plum">Share your transformation</h3><p class="text-gray-600 mt-2 max-w-lg mx-auto">Loved your results? Send your before and after photos on WhatsApp and join our community gallery.</p>
 <a data-wa="Hello Aura Beauty, I would like to share my before and after photos." href="#" class="mt-5 inline-block font-semibold px-6 py-3 rounded-full transition bg-[#25D366] text-white hover:bg-[#1fb957]">Send on WhatsApp</a></div></section>
 </main>
 
@@ -76,6 +75,6 @@
   </div>
 </aside>
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-plum text-white text-sm px-5 py-3 rounded-full shadow-xl z-[60] opacity-0 pointer-events-none transition-opacity"></div>
-<script src="assets/site.js?v=1794199692"></script>
+<script src="assets/site.js?v=1794200108"></script>
 </body>
 </html>
