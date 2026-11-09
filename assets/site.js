@@ -88,8 +88,8 @@
       '<div class="aspect-[4/3] bg-blush">' + art(p) + '</div><div class="p-4">' +
       '<h3 class="font-semibold text-plum leading-snug text-sm">' + p.name + '</h3>' +
       '<p class="text-[11px] text-gray-500 mt-0.5 min-h-[1.7rem] leading-snug">' + p.desc + '</p>' +
-      '<div class="mt-2 flex items-center justify-between gap-2"><span class="font-bold text-plum">' + money(p.price) + '</span>' +
-      '<button data-add="' + p.id + '" class="bg-plum text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-rose transition">Add to cart</button></div></div></article>';
+      '<div class="mt-2 flex items-center justify-between gap-2"><span class="font-bold text-plum whitespace-nowrap">' + money(p.price) + '</span>' +
+      '<button data-add="' + p.id + '" class="bg-plum text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-rose transition whitespace-nowrap">Add</button></div></div></article>';
   }
 
   /* ---------- Product grids (only on pages that have them) ---------- */
@@ -300,36 +300,23 @@
   /* ---------- Header behaviour, speed-dial, page transitions ---------- */
   var hd = $('hdr'), lastY = 0;
   if (hd) window.addEventListener('scroll', function () {
-    var y = window.scrollY; hd.classList.toggle('scrolled', y > 8);
-    if (y > lastY && y > 140) hd.classList.add('hide'); else hd.classList.remove('hide'); lastY = y;
+    hd.classList.toggle('scrolled', window.scrollY > 8);
   }, { passive: true });
   var fab = $('fab'), fb2 = $('fab-btn');
   if (fb2) {
     fb2.addEventListener('click', function (e) { e.stopPropagation(); var o = fab.classList.toggle('open'); fb2.setAttribute('aria-expanded', o ? 'true' : 'false'); });
     document.addEventListener('click', function (e) { if (!e.target.closest('#fab')) { fab.classList.remove('open'); fb2.setAttribute('aria-expanded', 'false'); } });
   }
-  document.addEventListener('click', function (e) {
-    var a = e.target.closest('a[href]'); if (!a || e.defaultPrevented || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
-    var h = a.getAttribute('href');
-    if (!h || h.charAt(0) === '#' || /^(https?:|tel:|mailto:|sms:|javascript:)/.test(h)) return;
-    e.preventDefault(); document.body.classList.add('leaving'); setTimeout(function () { location.href = h; }, 380);
-  });
-  window.addEventListener('pageshow', function () { document.body.classList.remove('leaving'); });
-
-  /* ---------- Scroll reveal ---------- */
-  (function () {
-    if (!('IntersectionObserver' in window) || $('feed') || document.querySelector('.dash')) return;
-    var els = document.querySelectorAll('main > section > div, main > section > article, main > section > details, main > section > h2, main article.card, main details.faq, main > section table, main .grid > *');
-    var seen = new Set(), list = [];
-    els.forEach(function (e) { if (!seen.has(e) && !e.closest('.banner')) { seen.add(e); list.push(e); } });
-    var io = new IntersectionObserver(function (en) {
-      en.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('rv-in'); io.unobserve(x.target); } });
-    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-    list.forEach(function (e) {
-      var idx = Array.prototype.indexOf.call(e.parentNode.children, e);
-      e.classList.add('rv'); e.style.setProperty('--d', Math.min(idx, 6) * 0.07 + 's'); io.observe(e);
+  /* ---------- Pre-load every page + offline cache ---------- */
+  var PAGES = ['index.html', 'glowing-skin.html', 'the-crown.html', 'gallery.html', 'reels.html', 'account.html', 'contact.html', 'about.html', 'faq.html', 'privacy.html', 'terms.html', 'community.html'];
+  function warm() {
+    PAGES.forEach(function (p) {
+      if (location.pathname.slice(-p.length) === p) return;
+      var l = document.createElement('link'); l.rel = 'prefetch'; l.href = p; document.head.appendChild(l);
     });
-  })();
+  }
+  (window.requestIdleCallback || function (f) { setTimeout(f, 500); })(warm);
+  if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
 
   window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
