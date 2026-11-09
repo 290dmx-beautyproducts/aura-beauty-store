@@ -179,3 +179,14 @@ a.bg-plum.rounded-full:hover::after,button.bg-plum.rounded-full:hover::after,.hd
 
 .marquee{display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px;vertical-align:bottom}
 .marquee span{animation:none!important;padding-left:0!important}
+
+/* ===== One persistent shell: page-level rules + content-only transitions ===== */
+html{scrollbar-gutter:stable}
+body[data-page="index"] footer,body[data-page="reels"] footer,body[data-page="index"] #fab,body[data-page="reels"] #fab{display:none!important}
+main{transition:opacity .15s ease}
+main.out{opacity:0}
+.rw{display:inline-block;white-space:nowrap}
+.rl,.rxu{display:inline-block;animation:rl .6s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes rl{from{opacity:0;transform:translateY(.6em);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+.rx{animation:rx .55s cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes rx{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
