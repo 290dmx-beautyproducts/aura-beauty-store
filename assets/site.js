@@ -12,18 +12,18 @@
   var SOCIAL = { instagram: '', tiktok: '', facebook: '', youtube: '' };
 
   var PRODUCTS = [
-    { id: 's1', cat: 'skin', name: 'Clear Skin Niacinamide Serum', desc: 'Calms breakouts and refines pores.', price: 1450, hue: ['#F7D6DF', '#E7A3B5'] },
-    { id: 's2', cat: 'skin', name: 'Dark Spot Corrector Serum', desc: 'Targets uneven tone and stubborn marks.', price: 1800, hue: ['#FCE7C8', '#E8B77A'] },
-    { id: 's3', cat: 'skin', name: 'Vitamin C Brightening Serum', desc: 'Boosts radiance for a fresh glow.', price: 1650, hue: ['#FFE9B8', '#F0B94A'] },
-    { id: 's4', cat: 'skin', name: 'Salicylic Acne Control Serum', desc: 'Unclogs pores and helps prevent new spots.', price: 1350, hue: ['#D8EDE6', '#8CC7B2'] },
-    { id: 's5', cat: 'skin', name: 'Hydrating Barrier Moisturizer', desc: 'Lightweight daily hydration for oily and combination skin.', price: 1200, hue: ['#DDE6F7', '#9DB5E3'] },
-    { id: 's6', cat: 'skin', name: 'Gentle Foaming Cleanser', desc: 'Cleans without stripping the skin.', price: 950, hue: ['#EADCF4', '#B99AD9'] },
-    { id: 'w1', cat: 'crown', name: 'Bob Lace Front Wig', desc: 'Sleek 12-inch bob with a natural hairline.', price: 4500, hue: ['#3b1f2b', '#8a4b5e'] },
-    { id: 'w2', cat: 'crown', name: 'Synthetic Headband Wig', desc: 'Throw on and go. Soft, light and easy to style.', price: 2600, hue: ['#2a1b26', '#6d3f56'] },
-    { id: 'w3', cat: 'crown', name: 'Body Wave Hair Blend Wig', desc: 'Full bouncy waves with a natural finish.', price: 5500, hue: ['#351b22', '#a05a66'] },
-    { id: 'w4', cat: 'crown', name: 'Straight Human Hair Wig', desc: 'Silky 18-inch straight hair, heat-friendly.', price: 9800, hue: ['#1f1520', '#5b3350'] },
-    { id: 'w5', cat: 'crown', name: 'Curly Closure Wig', desc: 'Defined curls with a pre-plucked closure.', price: 6800, hue: ['#2b1822', '#7e4358'] },
-    { id: 'w6', cat: 'crown', name: 'Deep Wave Frontal Wig', desc: 'Luxurious deep waves with a 13x4 frontal.', price: 12500, hue: ['#241320', '#6b3a56'] }
+    { id: 's1', tag: 'Acne care', cat: 'skin', name: 'Clear Skin Niacinamide Serum', desc: 'Calms breakouts and refines pores.', price: 1450, hue: ['#F7D6DF', '#E7A3B5'] },
+    { id: 's2', tag: 'Dark spots', cat: 'skin', name: 'Dark Spot Corrector Serum', desc: 'Targets uneven tone and stubborn marks.', price: 1800, hue: ['#FCE7C8', '#E8B77A'] },
+    { id: 's3', tag: 'Brightening', cat: 'skin', name: 'Vitamin C Brightening Serum', desc: 'Boosts radiance for a fresh glow.', price: 1650, hue: ['#FFE9B8', '#F0B94A'] },
+    { id: 's4', tag: 'Acne care', cat: 'skin', name: 'Salicylic Acne Control Serum', desc: 'Unclogs pores and helps prevent new spots.', price: 1350, hue: ['#D8EDE6', '#8CC7B2'] },
+    { id: 's5', tag: 'Hydration', cat: 'skin', name: 'Hydrating Barrier Moisturizer', desc: 'Lightweight daily hydration for oily and combination skin.', price: 1200, hue: ['#DDE6F7', '#9DB5E3'] },
+    { id: 's6', tag: 'Cleanser', cat: 'skin', name: 'Gentle Foaming Cleanser', desc: 'Cleans without stripping the skin.', price: 950, hue: ['#EADCF4', '#B99AD9'] },
+    { id: 'w1', tag: 'Lace front', cat: 'crown', name: 'Bob Lace Front Wig', desc: 'Sleek 12-inch bob with a natural hairline.', price: 4500, hue: ['#3b1f2b', '#8a4b5e'] },
+    { id: 'w2', tag: 'Headband', cat: 'crown', name: 'Synthetic Headband Wig', desc: 'Throw on and go. Soft, light and easy to style.', price: 2600, hue: ['#2a1b26', '#6d3f56'] },
+    { id: 'w3', tag: 'Hair blend', cat: 'crown', name: 'Body Wave Hair Blend Wig', desc: 'Full bouncy waves with a natural finish.', price: 5500, hue: ['#351b22', '#a05a66'] },
+    { id: 'w4', tag: 'Human hair', cat: 'crown', name: 'Straight Human Hair Wig', desc: 'Silky 18-inch straight hair, heat-friendly.', price: 9800, hue: ['#1f1520', '#5b3350'] },
+    { id: 'w5', tag: 'Closure', cat: 'crown', name: 'Curly Closure Wig', desc: 'Defined curls with a pre-plucked closure.', price: 6800, hue: ['#2b1822', '#7e4358'] },
+    { id: 'w6', tag: 'Frontal', cat: 'crown', name: 'Deep Wave Frontal Wig', desc: 'Luxurious deep waves with a 13x4 frontal.', price: 12500, hue: ['#241320', '#6b3a56'] }
   ];
   var FEATURED = ['s1', 's2', 'w1', 'w3'];
   var CLIPS = [
@@ -75,17 +75,18 @@
     if (p.cat === 'skin') {
       inner = '<rect x="78" y="34" width="44" height="22" rx="5" fill="#4A1942"/><rect x="92" y="14" width="16" height="24" rx="4" fill="#B76E79"/>' +
         '<rect x="64" y="54" width="72" height="104" rx="14" fill="#fff" fill-opacity=".92"/><rect x="64" y="86" width="72" height="34" fill="' + b + '" fill-opacity=".55"/>' +
-        '<text x="100" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#4A1942">AURA</text>';
+        '<text x="100" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#4A1942">AURA</text>' +
+        '<rect x="70" y="60" width="5" height="92" rx="2.5" fill="#fff" fill-opacity=".7"/><path d="M158 52l2.2 5.600 5.600 2.200-5.600 2.200L158 68l-2.200-5.600-5.600-2.200 5.600-2.200z" fill="#C9A24B" fill-opacity=".85"/><circle cx="44" cy="120" r="3" fill="#C9A24B" fill-opacity=".6"/><ellipse cx="100" cy="170" rx="38" ry="5" fill="#000" fill-opacity=".1"/>';
     } else {
       inner = '<path d="M100 28 C58 28 44 70 46 112 C47 138 56 156 68 166 L68 120 C68 80 84 62 100 62 C116 62 132 80 132 120 L132 166 C144 156 153 138 154 112 C156 70 142 28 100 28 Z" fill="' + b + '"/>' +
-        '<path d="M100 36 C66 38 56 74 58 108" stroke="#fff" stroke-opacity=".28" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="100" cy="176" rx="34" ry="6" fill="#000" fill-opacity=".12"/>';
+        '<path d="M100 36 C66 38 56 74 58 108" stroke="#fff" stroke-opacity=".28" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M84 42 C72 80 72 130 78 160" stroke="#fff" stroke-opacity=".16" stroke-width="2" fill="none"/><path d="M116 42 C128 80 128 130 122 160" stroke="#000" stroke-opacity=".14" stroke-width="2" fill="none"/><path d="M164 40l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#C9A24B" fill-opacity=".85"/><ellipse cx="100" cy="176" rx="34" ry="6" fill="#000" fill-opacity=".12"/>';
     }
     return '<svg viewBox="0 0 200 190" class="w-full h-full" role="img" aria-label="' + p.name + '"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + (p.cat === 'skin' ? a : '#F7E9EC') + '"/><stop offset="1" stop-color="' + (p.cat === 'skin' ? '#fff' : '#E9D3DA') + '"/></linearGradient></defs><rect width="200" height="190" fill="url(#' + gid + ')"/>' + inner + '</svg>';
   }
 
   function cardHtml(p) {
     return '<article class="card fade-in bg-white rounded-2xl overflow-hidden border border-rose/15">' +
-      '<div class="aspect-[4/3] bg-blush">' + art(p) + '</div><div class="p-4">' +
+      '<div class="relative aspect-[4/3] bg-blush">' + art(p) + '<span class="ptag">' + p.tag + '</span></div><div class="p-3">' +
       '<h3 class="font-semibold text-plum leading-snug text-sm">' + p.name + '</h3>' +
       '<p class="text-[11px] text-gray-500 mt-0.5 min-h-[1.7rem] leading-snug">' + p.desc + '</p>' +
       '<div class="mt-2 flex items-center justify-between gap-2"><span class="font-bold text-plum whitespace-nowrap">' + money(p.price) + '</span>' +
@@ -101,7 +102,7 @@
   });
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-add]');
-    if (b) addToCart(b.getAttribute('data-add'));
+    if (b) { addToCart(b.getAttribute('data-add')); var old = b.textContent; b.textContent = '\u2713'; b.classList.add('added'); setTimeout(function () { b.textContent = old; b.classList.remove('added'); }, 1000); }
   });
 
   /* ---------- Cart logic ---------- */
@@ -206,10 +207,10 @@
   }
   if (ba) {
     ba.innerHTML = GALLERY.map(function (g, i) {
-      return '<div class="fade-in"><div class="ba-wrap aspect-[4/5] shadow-lg"><div class="absolute inset-0">' + panel(g.a, 'before', g.spots, 'b' + i) + '</div>' +
+      return '<div class="fade-in' + (i === 2 ? ' col-span-2 md:col-span-1' : '') + '"><div class="ba-wrap ' + (i === 2 ? 'aspect-[16/9] md:aspect-[4/5]' : 'aspect-[4/5]') + ' shadow-lg"><div class="absolute inset-0">' + panel(g.a, 'before', g.spots, 'b' + i) + '</div>' +
         '<div class="ba-after">' + panel(g.b, 'after', false, 'a' + i) + '</div><div class="ba-handle"></div>' +
         '<input type="range" min="0" max="100" value="50" class="ba-range" aria-label="Before and after slider"></div>' +
-        '<div class="mt-3"><p class="text-xs uppercase tracking-widest text-rose font-semibold">' + g.tag + '</p><p class="font-serif text-xl font-bold text-plum">' + g.title + '</p></div></div>';
+        '<div class="mt-2"><p class="text-[10px] uppercase tracking-widest text-rose font-semibold">' + g.tag + '</p><p class="font-serif text-base md:text-xl font-bold text-plum leading-tight">' + g.title + '</p></div></div>';
     }).join('');
     document.querySelectorAll('.ba-wrap').forEach(function (w) {
       var r = w.querySelector('.ba-range'), a = w.querySelector('.ba-after'), h = w.querySelector('.ba-handle');
@@ -307,6 +308,9 @@
     fb2.addEventListener('click', function (e) { e.stopPropagation(); var o = fab.classList.toggle('open'); fb2.setAttribute('aria-expanded', o ? 'true' : 'false'); });
     document.addEventListener('click', function (e) { if (!e.target.closest('#fab')) { fab.classList.remove('open'); fb2.setAttribute('aria-expanded', 'false'); } });
   }
+  var strip = document.querySelector('.hdr-strip'), on = strip && strip.querySelector('a.on');
+  if (on) strip.scrollLeft = Math.max(0, on.offsetLeft - (strip.clientWidth - on.offsetWidth) / 2);
+
   /* ---------- Pre-load every page + offline cache ---------- */
   var PAGES = ['index.html', 'glowing-skin.html', 'the-crown.html', 'gallery.html', 'reels.html', 'account.html', 'contact.html', 'about.html', 'faq.html', 'privacy.html', 'terms.html', 'community.html'];
   function warm() {
