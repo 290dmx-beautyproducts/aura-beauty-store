@@ -413,6 +413,73 @@
   setActive(location.pathname);
   initPage(firstMain);
 
+
+  /* ============ Rotating wallpaper: random start, slow zoom in/out, new picture every ~3.6s ============ */
+  (function () {
+    var host = $('bg-layers'); if (!host) return;
+    var SETS = {
+      land: ['l01','l02','l03','l04','l05','l06','l07','l08','l09','l10','l11'],
+      port: ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10']
+    };
+    var HOLD = 3600, TRANS = 1300, mq = window.matchMedia('(max-width: 767px), (orientation: portrait)');
+    var key = null, bag = [], timer = null, count = 0, last = null;
+    try { last = localStorage.getItem('aura-bg-last'); } catch (e) {}
+    function url(n) { return 'assets/bg/' + n + '.webp' + (VER ? '?v=' + VER : ''); }
+    function shuffle(a, avoid) {
+      var r = a.slice(), i, j, t;
+      for (i = r.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = r[i]; r[i] = r[j]; r[j] = t; }
+      if (avoid && r.length > 1 && r[0] === avoid) { j = 1 + Math.floor(Math.random() * (r.length - 1)); t = r[0]; r[0] = r[j]; r[j] = t; }
+      return r;
+    }
+    function next() {
+      var set = mq.matches ? SETS.port : SETS.land;
+      if (!bag.length) bag = shuffle(set, last);
+      var n = bag.shift(); last = n; try { localStorage.setItem('aura-bg-last', n); } catch (e) {}
+      return n;
+    }
+    var FX = [
+      function () { return [{ opacity: 0, filter: 'blur(16px) brightness(1.2)' }, { opacity: 1, filter: 'blur(0px) brightness(1)' }]; },
+      function () { return [{ clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(78% at 50% 50%)' }]; },
+      function () { return [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }]; },
+      function () { return [{ clipPath: 'polygon(0 0,0 0,0 0)' }, { clipPath: 'polygon(0 0,240% 0,0 240%)' }]; },
+      function () { return [{ clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0 0 0 0)' }]; }
+    ];
+    function kenBurns(inner, zoomIn) {
+      var tx = (Math.random() * 2 - 1) * 2.4, ty = (Math.random() * 2 - 1) * 2.4;
+      var a = 'scale(1.0) translate(0,0)', b = 'scale(1.13) translate(' + tx + '%,' + ty + '%)';
+      inner.animate(zoomIn ? [{ transform: a }, { transform: b }] : [{ transform: b }, { transform: a }], { duration: HOLD + TRANS * 2, easing: 'ease-in-out', fill: 'forwards' });
+    }
+    function show(first) {
+      var name = next(), img = new Image();
+      img.onload = function () {
+        var layer = document.createElement('div'), inner = document.createElement('div');
+        layer.className = 'bg-l'; inner.className = 'bg-i'; inner.style.backgroundImage = 'url(' + img.src + ')';
+        layer.appendChild(inner); host.appendChild(layer);
+        kenBurns(inner, count % 2 === 0); count++;
+        var olds = Array.prototype.slice.call(host.children, 0, -1);
+        if (!reduce && !first && olds.length) {
+          var fx = FX[Math.floor(Math.random() * FX.length)]();
+          layer.animate(fx, { duration: TRANS, easing: 'cubic-bezier(.65,0,.25,1)' }).onfinish = function () { olds.forEach(function (o) { o.remove(); }); };
+          var sh = $('bg-shine'); if (sh && sh.animate) sh.animate([{ opacity: 0, transform: 'translateX(-130%) skewX(-18deg)' }, { opacity: 1, offset: .5 }, { opacity: 0, transform: 'translateX(420%) skewX(-18deg)' }], { duration: TRANS + 200, easing: 'ease-in-out' });
+        } else if (first) {
+          layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: 'ease-out' });
+        } else { olds.forEach(function (o) { o.remove(); }); }
+        schedule();
+      };
+      img.onerror = function () { schedule(); };
+      img.src = url(name);
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (reduce || document.hidden) return;
+      timer = setTimeout(function () { show(false); }, HOLD + Math.round(Math.random() * 400));
+    }
+    function restart() { bag = []; host.innerHTML = ''; count = 0; clearTimeout(timer); show(true); }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(timer); else schedule(); });
+    if (mq.addEventListener) mq.addEventListener('change', restart); else if (mq.addListener) mq.addListener(restart);
+    show(true);
+  })();
+
   window.AuraStore = { add: addToCart, products: PRODUCTS };
   renderCart();
 })();
