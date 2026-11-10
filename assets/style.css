@@ -183,8 +183,6 @@ a.bg-plum.rounded-full:hover::after,button.bg-plum.rounded-full:hover::after,.hd
 /* ===== One persistent shell: page-level rules + content-only transitions ===== */
 html{scrollbar-gutter:stable}
 body[data-page="index"] footer,body[data-page="reels"] footer,body[data-page="index"] #fab,body[data-page="reels"] #fab{display:none!important}
-main{transition:opacity .15s ease}
-main.out{opacity:0}
 .rw{display:inline-block;white-space:nowrap}
 .rl,.rxu{display:inline-block;animation:rl .6s cubic-bezier(.2,.7,.2,1) backwards}
 @keyframes rl{from{opacity:0;transform:translateY(.6em);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
@@ -198,7 +196,6 @@ body{background:none!important}
 .bg-l{position:absolute;inset:0;overflow:hidden;will-change:clip-path,opacity,filter}
 .bg-i{position:absolute;inset:-5%;background-size:cover;background-position:center;will-change:transform}
 #bg-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,245,240,.7),rgba(248,236,239,.8))}
-body[data-page="index"] #bg-veil{background:linear-gradient(135deg,rgba(58,18,51,.76),rgba(74,25,66,.64) 55%,rgba(123,58,110,.68))}
 body[data-page="reels"] #bg{display:none}
 #bg-shine{position:absolute;top:-10%;bottom:-10%;left:0;width:32%;opacity:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-130%) skewX(-18deg)}
 .dash{background:none!important;background-image:none!important}
@@ -207,3 +204,23 @@ body[data-page="reels"] #bg{display:none}
 main .bg-white,.dd{background-color:rgba(255,255,255,.9)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 article.card{background:linear-gradient(180deg,rgba(255,255,255,.93),rgba(255,249,248,.9))!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 main .bg-blush{background-color:rgba(247,233,236,.85)}
+
+/* ===== Premium page transition: old and new content overlap (never a blank frame) ===== */
+#bg-veil{transition:opacity .8s ease}
+#bg-veil2{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;background:linear-gradient(135deg,rgba(58,18,51,.76),rgba(74,25,66,.64) 55%,rgba(123,58,110,.68))}
+body[data-page="index"] #bg-veil2{opacity:1}
+body[data-page="index"] #bg-veil{opacity:0}
+#bg{view-transition-name:vt-bg}
+#hdr{view-transition-name:vt-hdr}
+main{view-transition-name:vt-page}
+footer{view-transition-name:vt-ftr}
+#fab{view-transition-name:vt-fab}
+::view-transition-old(root),::view-transition-new(root){animation:none}
+::view-transition-group(vt-bg),::view-transition-group(vt-hdr),::view-transition-group(vt-ftr),::view-transition-group(vt-fab),::view-transition-group(vt-page){animation:none}
+::view-transition-old(vt-bg),::view-transition-old(vt-hdr),::view-transition-old(vt-ftr),::view-transition-old(vt-fab){display:none}
+::view-transition-new(vt-bg),::view-transition-new(vt-hdr),::view-transition-new(vt-ftr),::view-transition-new(vt-fab){animation:none}
+::view-transition-old(vt-page){animation:vtOut .34s cubic-bezier(.45,0,.9,.6) both}
+::view-transition-new(vt-page){animation:vtIn .6s cubic-bezier(.16,1,.3,1) .08s both}
+@keyframes vtOut{to{opacity:0;transform:translateY(-18px) scale(.985);filter:blur(6px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(26px) scale(1.012);filter:blur(7px)}}
+main.enter{animation:vtIn .6s cubic-bezier(.16,1,.3,1) both}
