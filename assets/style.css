@@ -210,17 +210,8 @@ main .bg-blush{background-color:rgba(247,233,236,.85)}
 #bg-veil2{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;background:linear-gradient(135deg,rgba(58,18,51,.76),rgba(74,25,66,.64) 55%,rgba(123,58,110,.68))}
 body[data-page="index"] #bg-veil2{opacity:1}
 body[data-page="index"] #bg-veil{opacity:0}
-#bg{view-transition-name:vt-bg}
-#hdr{view-transition-name:vt-hdr}
-main{view-transition-name:vt-page}
-footer{view-transition-name:vt-ftr}
-#fab{view-transition-name:vt-fab}
-::view-transition-old(root),::view-transition-new(root){animation:none}
-::view-transition-group(vt-bg),::view-transition-group(vt-hdr),::view-transition-group(vt-ftr),::view-transition-group(vt-fab),::view-transition-group(vt-page){animation:none}
-::view-transition-old(vt-bg),::view-transition-old(vt-hdr),::view-transition-old(vt-ftr),::view-transition-old(vt-fab){display:none}
-::view-transition-new(vt-bg),::view-transition-new(vt-hdr),::view-transition-new(vt-ftr),::view-transition-new(vt-fab){animation:none}
-::view-transition-old(vt-page){animation:vtOut .34s cubic-bezier(.45,0,.9,.6) both}
-::view-transition-new(vt-page){animation:vtIn .6s cubic-bezier(.16,1,.3,1) .08s both}
-@keyframes vtOut{to{opacity:0;transform:translateY(-18px) scale(.985);filter:blur(6px)}}
-@keyframes vtIn{from{opacity:0;transform:translateY(26px) scale(1.012);filter:blur(7px)}}
-main.enter{animation:vtIn .6s cubic-bezier(.16,1,.3,1) both}
+
+/* ===== Page transition (own implementation, identical in every browser) ===== */
+html{overflow-x:clip}
+.pg-ghost{position:fixed;z-index:20;margin:0;overflow:hidden;pointer-events:none;will-change:transform,opacity}
+#hdr-sweep{position:absolute;left:0;bottom:0;height:2px;width:26%;opacity:0;pointer-events:none;background:linear-gradient(90deg,transparent,#fff 45%,#F2C9CF 55%,transparent);z-index:2}
