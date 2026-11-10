@@ -190,3 +190,20 @@ main.out{opacity:0}
 @keyframes rl{from{opacity:0;transform:translateY(.6em);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
 .rx{animation:rx .55s cubic-bezier(.2,.7,.2,1) backwards}
 @keyframes rx{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ===== Rotating wallpaper (slightly blurred, content stays readable) ===== */
+html{background:#2a0f26}
+body{background:none!important}
+#bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#2a0f26;pointer-events:none}
+.bg-l{position:absolute;inset:0;overflow:hidden;will-change:clip-path,opacity,filter}
+.bg-i{position:absolute;inset:-5%;background-size:cover;background-position:center;will-change:transform}
+#bg-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,245,240,.7),rgba(248,236,239,.8))}
+body[data-page="index"] #bg-veil{background:linear-gradient(135deg,rgba(58,18,51,.76),rgba(74,25,66,.64) 55%,rgba(123,58,110,.68))}
+body[data-page="reels"] #bg{display:none}
+#bg-shine{position:absolute;top:-10%;bottom:-10%;left:0;width:32%;opacity:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-130%) skewX(-18deg)}
+.dash{background:none!important;background-image:none!important}
+.banner{background-image:radial-gradient(120% 140% at 88% -25%,rgba(242,201,207,.3),transparent 55%),radial-gradient(90% 120% at 0% 125%,rgba(201,162,75,.24),transparent 55%),linear-gradient(135deg,rgba(58,18,51,.93),rgba(74,25,66,.88) 45%,rgba(123,58,110,.84))}
+.ft{background:linear-gradient(135deg,rgba(58,18,51,.95),rgba(74,25,66,.95) 50%,rgba(93,33,85,.95))}
+main .bg-white,.dd{background-color:rgba(255,255,255,.9)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+article.card{background:linear-gradient(180deg,rgba(255,255,255,.93),rgba(255,249,248,.9))!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+main .bg-blush{background-color:rgba(247,233,236,.85)}
