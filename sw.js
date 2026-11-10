@@ -1,7 +1,7 @@
-const V='aura-1794221492';
+const V='aura-1794285091';
 const FONTS='aura-fonts';
 const FONT_CSS='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=block';
-const PRE=["./", "index.html", "glowing-skin.html", "the-crown.html", "gallery.html", "account.html", "contact.html", "reels.html", "about.html", "privacy.html", "terms.html", "community.html", "faq.html", "assets/tailwind.css?v=1794221492", "assets/style.css?v=1794221492", "assets/site.js?v=1794221492", "assets/reels.js?v=1794221492"];
+const PRE=["./", "index.html", "glowing-skin.html", "the-crown.html", "gallery.html", "account.html", "contact.html", "reels.html", "about.html", "privacy.html", "terms.html", "community.html", "faq.html", "assets/tailwind.css?v=1794285091", "assets/style.css?v=1794285091", "assets/site.js?v=1794285091", "assets/reels.js?v=1794285091"];
 self.addEventListener('install',e=>{e.waitUntil(Promise.all([
   caches.open(V).then(c=>c.addAll(PRE)),
   caches.open(FONTS).then(c=>fetch(FONT_CSS,{mode:'no-cors'}).then(r=>c.put(FONT_CSS,r))).catch(()=>{})
