@@ -380,21 +380,23 @@
 
   function navigate(url, push) {
     var u = new URL(url, location.href), token = ++navToken, main = document.querySelector('main');
-    main.classList.add('out');
-    var wait = new Promise(function (r) { setTimeout(r, 140); });
-    var load = fetch(u.pathname + u.search).then(function (r) { if (!r.ok) throw 0; return r.text(); });
-    Promise.all([load, wait]).then(function (res) {
+    fetch(u.pathname + u.search).then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (html) {
       if (token !== navToken) return;
-      var doc = new DOMParser().parseFromString(res[0], 'text/html'), nm = doc.querySelector('main');
+      var doc = new DOMParser().parseFromString(html, 'text/html'), nm = doc.querySelector('main');
       if (!nm) throw 0;
-      if (destroyReels) { try { destroyReels(); } catch (e) {} destroyReels = null; }
-      closeCart(); if (fab) fab.classList.remove('open'); var au = $('au-root'); if (au) au.remove();
-      document.title = doc.title; document.body.setAttribute('data-page', doc.body.getAttribute('data-page') || '');
-      if (push) history.pushState({}, '', u.pathname + u.search + u.hash);
-      main.innerHTML = nm.innerHTML;
-      window.scrollTo(0, 0); setActive(u.pathname);
-      initPage(main);
-      main.classList.remove('out');
+      function swap() {
+        try {
+          if (destroyReels) { try { destroyReels(); } catch (e) {} destroyReels = null; }
+          closeCart(); if (fab) fab.classList.remove('open'); var au = $('au-root'); if (au) au.remove();
+          document.title = doc.title; document.body.setAttribute('data-page', doc.body.getAttribute('data-page') || '');
+          if (push) history.pushState({}, '', u.pathname + u.search + u.hash);
+          main.innerHTML = nm.innerHTML;
+          window.scrollTo(0, 0); setActive(u.pathname);
+          initPage(main);
+        } catch (err) { location.href = u.href; }
+      }
+      if (document.startViewTransition && !reduce) document.startViewTransition(swap);
+      else { swap(); if (!reduce) { main.classList.remove('enter'); void main.offsetWidth; main.classList.add('enter'); } }
     }).catch(function () { if (token === navToken) location.href = u.href; });
   }
   document.addEventListener('click', function (e) {
