@@ -252,3 +252,18 @@ html{overflow-x:clip}
 .logo-mark{width:28px;height:28px}
 .hdr-pill,.hdr-cart{padding:0 8px}
 }
+
+/* ===== Tighter vertical rhythm ===== */
+.banner>div{padding-top:.9rem!important;padding-bottom:.9rem!important}
+.banner h1{line-height:1.1}
+.banner h1::after{margin-top:.35rem}
+.banner p{margin-top:.25rem!important}
+.dd summary{padding:.5rem .8rem}
+.dd-b{padding:0 .9rem .7rem 3rem;line-height:1.5}
+.dd-b p+p{margin-top:.35rem}
+details.faq{padding-top:.55rem!important;padding-bottom:.55rem!important}
+.faq .faq-a{margin-top:.4rem!important}
+article.card>div:last-child{padding:.6rem .65rem .65rem!important}
+.ft>div:first-child{padding-top:.7rem!important;padding-bottom:.55rem!important}
+main h2.font-serif{line-height:1.15}
+main section>.text-center.mb-3,main section>.text-center.mb-4{margin-bottom:.6rem!important}
