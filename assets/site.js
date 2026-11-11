@@ -90,10 +90,10 @@
 
   function cardHtml(p) {
     return '<article class="card fade-in bg-white rounded-2xl overflow-hidden border border-rose/15">' +
-      '<div class="relative aspect-[4/3] bg-blush">' + art(p) + '<span class="ptag">' + p.tag + '</span></div><div class="p-3">' +
+      '<div class="relative aspect-[16/11] bg-blush">' + art(p) + '<span class="ptag">' + p.tag + '</span></div><div class="p-3">' +
       '<h3 class="font-semibold text-plum leading-snug text-sm">' + p.name + '</h3>' +
       '<p class="text-[11px] text-gray-500 mt-0.5 min-h-[1.7rem] leading-snug">' + p.desc + '</p>' +
-      '<div class="mt-2 flex items-center justify-between gap-2"><span class="font-bold text-plum whitespace-nowrap">' + money(p.price) + '</span>' +
+      '<div class="mt-1.5 flex items-center justify-between gap-2"><span class="font-bold text-plum whitespace-nowrap">' + money(p.price) + '</span>' +
       '<button data-add="' + p.id + '" class="bg-plum text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-rose transition whitespace-nowrap">Add</button></div></div></article>';
   }
 
