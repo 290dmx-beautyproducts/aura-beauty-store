@@ -10,6 +10,9 @@
   var PHONE_NUMBER = '254700000000';
   /* Social media links: paste your full page links between the quotes. */
   var SOCIAL = { instagram: '', tiktok: '', facebook: '', youtube: '' };
+  /* M-PESA SETTINGS: when your payment server is ready (see the "server" folder), paste its address
+     between the quotes, for example 'https://aura-beauty-api.onrender.com'. Leave empty until then. */
+  var MPESA_API_URL = window.AURA_MPESA_API || '';
 
   var PRODUCTS = [
     { id: 's1', tag: 'Acne care', cat: 'skin', name: 'Clear Skin Niacinamide Serum', desc: 'Calms breakouts and refines pores.', price: 1450, hue: ['#F7D6DF', '#E7A3B5'] },
@@ -147,7 +150,7 @@
     $('delivery').textContent = (sub > 0 && fee === 0) ? 'FREE' : money(fee);
     $('total').textContent = money(sub + fee);
     $('free-hint').textContent = ($('zone').value === 'local' && sub > 0 && sub <= 1500) ? 'Add ' + money(1501 - sub) + ' more for free local delivery.' : '';
-    $('wa-checkout').disabled = cart.length === 0;
+    $('wa-checkout').disabled = cart.length === 0; $('mpesa-pay').disabled = cart.length === 0;
   }
   function change(id, d) {
     var item = cart.filter(function (i) { return i.id === id; })[0]; if (!item) return;
@@ -181,6 +184,94 @@
       'Subtotal: ' + money(sub), 'Delivery: ' + (fee === 0 ? 'FREE' : money(fee)), '*TOTAL: ' + money(sub + fee) + '*', '',
       'I will pay by M-Pesa once you confirm availability. Thank you!');
     window.open(waLink(L.join('\n')), '_blank', 'noopener');
+  });
+
+
+  /* ---------- M-Pesa STK Push (customer gets a PIN prompt on their phone) ---------- */
+  var pay = { poll: null, tick: null, snap: null, busy: false };
+  var PHONE_SVG = '<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>';
+  try { var savedPhone = localStorage.getItem('aura-phone'); if (savedPhone && $('cust-phone')) $('cust-phone').value = savedPhone; } catch (e) {}
+  function normPhone(v) { var m = String(v || '').replace(/[\s\-()+]/g, '').match(/^(?:254|0)?([17]\d{8})$/); return m ? '254' + m[1] : null; }
+  function payShow(html) { var v = $('pay-view'); v.innerHTML = html; v.classList.add('on'); }
+  function payStop() { clearInterval(pay.poll); clearInterval(pay.tick); pay.poll = pay.tick = null; }
+  function payClose() { payStop(); pay.busy = false; var v = $('pay-view'); v.classList.remove('on'); v.innerHTML = ''; }
+  function payBtn(id, label, cls) { return '<button id="' + id + '" class="w-full ' + cls + ' font-semibold py-3 rounded-full transition">' + label + '</button>'; }
+  function payFail(msg, setup) {
+    payStop(); pay.busy = false;
+    payShow('<div class="pay-bad"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></div>' +
+      '<h3 class="font-serif text-2xl font-bold text-plum mt-4">' + (setup ? 'M-Pesa is almost ready' : 'Payment not completed') + '</h3>' +
+      '<p class="text-sm text-gray-600 mt-2 max-w-xs">' + esc(msg) + '</p><div class="w-full max-w-xs space-y-2 mt-5">' +
+      (setup ? payBtn('pay-wa', 'Order on WhatsApp instead', 'bg-[#25D366] text-white') : payBtn('pay-retry', 'Try again', 'bg-plum text-white')) +
+      payBtn('pay-back', 'Back to cart', 'border border-plum/30 text-plum bg-white') + '</div>');
+  }
+  function payWaiting(amount) {
+    var left = 150;
+    payShow('<div class="pay-ring">' + PHONE_SVG + '</div><h3 class="font-serif text-2xl font-bold text-plum mt-5">Check your phone</h3>' +
+      '<p class="text-sm text-gray-600 mt-2 max-w-xs">M-Pesa is asking you to pay <b>' + money(amount) + '</b> to Aura Beauty. Enter your M-Pesa PIN to finish.</p>' +
+      '<p class="text-xs text-gray-400 mt-4">Waiting for confirmation <span id="pay-count">' + left + '</span>s</p>' +
+      '<p id="pay-hint" class="text-xs text-gray-500 mt-3 max-w-xs" style="display:none">No prompt yet? Make sure your phone is on and has network. You can cancel and try again.</p>' +
+      '<button id="pay-cancel" class="mt-5 text-sm text-gray-500 underline">Cancel</button>');
+    pay.tick = setInterval(function () {
+      left--; var c = $('pay-count'); if (c) c.textContent = Math.max(left, 0);
+      var h = $('pay-hint'); if (h && left < 115) h.style.display = 'block';
+      if (left <= 0) payFail('We did not get a confirmation. If money left your M-Pesa, please WhatsApp us your phone number and we will check it right away.');
+    }, 1000);
+  }
+  function paySuccess(receipt) {
+    payStop(); pay.busy = false; pay.snap.receipt = receipt || '';
+    cart = []; save(); renderCart();
+    payShow('<div class="pay-ok"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+      '<h3 class="font-serif text-2xl font-bold text-plum mt-5">Payment received!</h3>' +
+      '<p class="text-sm text-gray-600 mt-2">Thank you, ' + esc(pay.snap.name) + '. Your order is confirmed.</p>' +
+      (receipt ? '<p class="mt-3 text-xs uppercase tracking-widest text-gray-400">M-Pesa receipt</p><p class="font-mono font-bold text-plum text-lg">' + esc(receipt) + '</p>' : '') +
+      '<div class="w-full max-w-xs space-y-2 mt-5">' + payBtn('pay-send', 'Send order details on WhatsApp', 'bg-[#25D366] text-white') + payBtn('pay-done', 'Done', 'border border-plum/30 text-plum bg-white') + '</div>');
+  }
+  function payCheck(orderId, amount) {
+    fetch(MPESA_API_URL.replace(/\/$/, '') + '/api/mpesa/status/' + encodeURIComponent(orderId)).then(function (r) { return r.json(); }).then(function (d) {
+      if (!pay.busy) return;
+      if (d.status === 'paid') paySuccess(d.receipt);
+      else if (d.status === 'review') paySuccess(d.receipt);
+      else if (d.status && d.status !== 'pending') payFail(d.message || 'The payment did not go through.');
+    }).catch(function () { /* network blip: keep waiting */ });
+  }
+  function startPay() {
+    if (!cart.length || pay.busy) return;
+    var name = $('cust-name').value.trim(), area = $('cust-area').value.trim(), phone = normPhone($('cust-phone').value);
+    if (!name || !area) { toast('Please add your name and area first'); (name ? $('cust-area') : $('cust-name')).focus(); return; }
+    if (!phone) { toast('Enter a valid M-Pesa number, like 0712 345 678'); $('cust-phone').focus(); return; }
+    if (!MPESA_API_URL) { payFail('Card-free M-Pesa payments are being set up. For now, please order on WhatsApp and we will send you payment details.', true); return; }
+    try { localStorage.setItem('aura-phone', $('cust-phone').value.trim()); } catch (e) {}
+    var sub = subtotal(), fee = deliveryFee(sub), zone = $('zone').value;
+    pay.snap = { name: name, area: area, zone: ZONES[zone], sub: sub, fee: fee, total: sub + fee, lines: cart.map(function (i) { var p = find(i.id); return p.name + ' x' + i.qty + ' = ' + money(p.price * i.qty); }) };
+    pay.busy = true;
+    payShow('<div class="pay-spin"></div><p class="text-sm text-gray-600 mt-4">Sending payment request...</p>');
+    fetch(MPESA_API_URL.replace(/\/$/, '') + '/api/mpesa/stkpush', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: phone, name: name, area: area, zone: zone, items: cart.map(function (i) { return { id: i.id, qty: i.qty }; }) }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (d) {
+        if (!d.ok) { payFail(d.error || 'We could not start the payment. Please try again.', d.code === 'not_configured'); return; }
+        payWaiting(d.amount || pay.snap.total);
+        pay.poll = setInterval(function () { payCheck(d.orderId, d.amount); }, 3000);
+        setTimeout(function () { payCheck(d.orderId, d.amount); }, 1500);
+      })
+      .catch(function () { payFail('We could not reach the payment server. Please check your internet and try again.'); });
+  }
+  function payWhatsApp() {
+    var s = pay.snap; if (!s) return;
+    var L = ['*PAID via M-Pesa*' + (s.receipt ? ' (Receipt: ' + s.receipt + ')' : ''), '', '*Name:* ' + s.name, '', '*Items:*'];
+    s.lines.forEach(function (l, n) { L.push((n + 1) + '. ' + l); });
+    L.push('', '*Delivery zone:* ' + s.zone, '*Delivery address:* ' + s.area, '', 'Subtotal: ' + money(s.sub), 'Delivery: ' + (s.fee === 0 ? 'FREE' : money(s.fee)), '*TOTAL PAID: ' + money(s.total) + '*');
+    window.open(waLink(L.join('\n')), '_blank', 'noopener');
+  }
+  $('mpesa-pay').addEventListener('click', startPay);
+  $('pay-view').addEventListener('click', function (e) {
+    var id = (e.target.closest('button') || {}).id;
+    if (id === 'pay-cancel') { payClose(); toast('Cancelled. If you already paid, WhatsApp us your receipt.'); }
+    else if (id === 'pay-back') payClose();
+    else if (id === 'pay-done') { payClose(); closeCart(); }
+    else if (id === 'pay-retry') { payClose(); startPay(); }
+    else if (id === 'pay-send') payWhatsApp();
+    else if (id === 'pay-wa') { payClose(); $('wa-checkout').click(); }
   });
 
   /* ---------- Mobile menu ---------- */
