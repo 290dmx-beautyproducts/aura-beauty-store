@@ -267,3 +267,27 @@ article.card>div:last-child{padding:.6rem .65rem .65rem!important}
 .ft>div:first-child{padding-top:.7rem!important;padding-bottom:.55rem!important}
 main h2.font-serif{line-height:1.15}
 main section>.text-center.mb-3,main section>.text-center.mb-4{margin-bottom:.6rem!important}
+
+/* ===== M-Pesa payment screen ===== */
+#pay-view{display:none}
+#pay-view.on{display:flex;animation:fadeOnly .2s ease-out}
+.pay-spin{width:46px;height:46px;border-radius:50%;border:4px solid #F7E9EC;border-top-color:#4A1942;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pay-ring{width:84px;height:84px;border-radius:50%;background:#EAF7EE;display:flex;align-items:center;justify-content:center;position:relative;color:#2e9e44}
+.pay-ring::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid #2e9e44;animation:ringpulse 1.6s ease-out infinite}
+@keyframes ringpulse{from{transform:scale(.85);opacity:.6}to{transform:scale(1.3);opacity:0}}
+.pay-ok{width:84px;height:84px;border-radius:50%;background:#2e9e44;display:flex;align-items:center;justify-content:center;animation:okpop .5s cubic-bezier(.2,.8,.2,1.3)}
+@keyframes okpop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.pay-ok path{stroke-dasharray:32;stroke-dashoffset:32;animation:okdraw .45s .2s ease-out forwards}
+@keyframes okdraw{to{stroke-dashoffset:0}}
+.pay-bad{width:84px;height:84px;border-radius:50%;background:#FDECEA;color:#c0392b;display:flex;align-items:center;justify-content:center}
+
+/* ===== Phones: tiny chat bubble that never covers content ===== */
+@media(max-width:767px){
+#fab{bottom:.7rem!important;right:.6rem!important;gap:.4rem!important}
+#fab .fab-main{width:26px;height:26px;box-shadow:0 3px 10px rgba(74,25,66,.35);opacity:.92}
+#fab .fab-main::before{content:'';position:absolute;inset:-9px}
+#fab .fab-ic{width:13px;height:13px}
+.fab-item{width:30px;height:30px}
+.fab-item svg{width:15px;height:15px}
+}
